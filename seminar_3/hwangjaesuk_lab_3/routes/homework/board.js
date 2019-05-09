@@ -70,17 +70,18 @@ router.post('/board', function(req, res, next) {
 
 
 router.put('/board', function(req, res, next) {
-    const id = req.query.id;
-    const password = req.query.password;
+    const id = req.body.id;
+    const password = req.body.password;
     const title = req.body.title;
     const content = req.body.content;
+    var count = 0;
     csv()
     .fromFile('./database/article.csv')
     .then(function(articleData){
         articleData.forEach(function (article, index, array) {
         if(article.id == id)
         {
-            signal = 1;
+            count += 1;
             crypto.pbkdf2(password, article.salt, 10 , 32, 'SHA512', (err, result) => {
                 if(result.toString('base64') === article.password)
                 {
@@ -98,24 +99,28 @@ router.put('/board', function(req, res, next) {
                 }
             )
         }
-    })    
-    if(signal == undefined )     
-        res.send('no data contains this id');
     })
+    
+    if(count == 0)     
+        res.send('no id or no data contains this id');
+    })
+    .catch(function (err) {
+        console.error(err);
+    });
 });
 
 
 router.delete('/board', function(req, res, next) {
-    const id = req.query.id;
-    const password = req.query.password;
-    let signal;
+    const id = req.body.id;
+    const password = req.body.password;
+    var count = 0;
     csv()
     .fromFile('./database/article.csv')
     .then(function(articleData){
         articleData.forEach(function (article, index, array) {
         if(article.id == id)
         {
-            signal = 1;
+            count += 1;
             crypto.pbkdf2(password, article.salt, 10 , 32, 'SHA512', (err, result) => {
                 if(result.toString('base64') === article.password)
                 {
@@ -126,14 +131,17 @@ router.delete('/board', function(req, res, next) {
                 }
                 else{
                     res.send("incorrect password");
-                }
+                    }
                 }
             )
         }
     })    
-    if(signal == undefined )     
-        res.send('no data contains this id');
+    if(count == 0)  
+        res.send('no id or no data contains this id');
     })
+    .catch(function (err) {
+        console.error(err);
+    });
 });
 
 
