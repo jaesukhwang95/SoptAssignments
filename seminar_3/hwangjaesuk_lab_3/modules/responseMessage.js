@@ -4,6 +4,8 @@ module.exports = {
     ID_OR_PW_NULL_VALUE: "아이디/비밀번호 값이 없습니다.",
     CREATED_USER: "회원 가입 성공",
     DELETE_USER: "회원 탈퇴 성공",
+    CREATED_ARTICLE: "게시물 작성 성공",
+    UPDATED_ARTICLE: "게시물 수정 성공",
 
     ALREADY_USER: "이미 회원입니다.",
     NO_USER: "존재하지 않는 회원입니다.",
