@@ -1,0 +1,20 @@
+module.exports = {
+    NULL_VALUE: "필요한 값이 없습니다",
+    OUT_OF_VALUE: "파라미터 값이 잘못되었습니다",
+    USER_ALREADY_EXISTS: "이미 존재하는 유저입나다",
+    HASHING_FAIL: "비밀번호 해싱 실패",
+    BOARD_INSERT_SUCCESS: "게시판 작성 성공",
+    BOARD_INSERT_FAIL: "게시판 작성 실패",
+    BOARD_UPDATE_SUCCESS: "게시판 수정 성공",
+    BOARD_UPDATE_FAIL: "게시판 수정 실패",
+    USER_SELECT_FAIL: "유저 조회 실패",
+    BOARD_SELECT_FAIL: "게시판 조회 실패",
+    BOARD_SELECT_SUCCESS: "게시판 조회 성공",
+    BOARD_DELETE_FAIL: "게시판 삭제 실패",
+    BOARD_DELETE_SUCCESS: "게시판 삭제 성공",
+    LOGIN_FAIL: "로그인 실패",
+    LOGIN_SUCCESS: "로그인 성공",
+    USER_INSERT_SUCCESS: "유저 삽입 성공",
+    USER_INSERT_FAIL: "유저 삽입 실패",
+    INCORRECT_PASSWORD: "잘못된 비밀번호"
+};
