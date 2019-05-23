@@ -12,9 +12,11 @@ module.exports = {
     BOARD_SELECT_SUCCESS: "게시판 조회 성공",
     BOARD_DELETE_FAIL: "게시판 삭제 실패",
     BOARD_DELETE_SUCCESS: "게시판 삭제 성공",
+    ID_MISS_MATCH: "아이디가 존재하지 않습니다.",
+    PASSWORD_MISS_MATCH: "패스워드가 일치하지 않습니다.",
     LOGIN_FAIL: "로그인 실패",
     LOGIN_SUCCESS: "로그인 성공",
-    USER_INSERT_SUCCESS: "유저 삽입 성공",
-    USER_INSERT_FAIL: "유저 삽입 실패",
+    USER_INSERT_SUCCESS: "회원가입 성공",
+    USER_INSERT_FAIL: "회원가입 실패",
     INCORRECT_PASSWORD: "잘못된 비밀번호"
 };
