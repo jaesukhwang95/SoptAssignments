@@ -7,7 +7,7 @@ const db = require('../../module/pool');
 const crypto = require('crypto-promise');
 
 router.post('/signup', async(req, res) => {
-    var count = 0;
+    var signal = 0;
     if(!req.body.id || !req.body.name || !req.body.password)
     {
         res.status(200).send(defaultRes.successFalse(statusCode.BAD_REQUEST, resMessage.NULL_VALUE));
@@ -22,11 +22,11 @@ router.post('/signup', async(req, res) => {
                 console.log(user)
                 if(user.userId == req.body.id)
                 {
-                    count += 1;
+                    signal += 1;
                     res.status(200).send(defaultRes.successFalse(statusCode.BAD_REQUEST, resMessage.USER_ALREADY_EXISTS));
                 }
             });
-            if(count == 0)
+            if(signal == 0)
             {
                 const salt = await crypto.randomBytes(32);
                 const password = await crypto.pbkdf2(req.body.password, salt.toString('base64'), 1000, 32, 'SHA512');
