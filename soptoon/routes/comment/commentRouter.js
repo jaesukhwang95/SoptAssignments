@@ -6,6 +6,7 @@ const resMessage = require('../../module/utils/responseMessage');
 const db = require('../../module/pool');
 const upload = require('../../config/multer');
 const moment = require('moment');
+const dataFilter = require('../../module/utils/dataFilter');
 
 router.get('/:webtoonIdx/:episodeIdx', async(req, res) => {
     const getCommentsWithSameEpisodeIdxQuery = 'SELECT * FROM comment LEFT JOIN user ON comment.userIdx = user.userIdx' + 
@@ -15,19 +16,9 @@ router.get('/:webtoonIdx/:episodeIdx', async(req, res) => {
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.COMMENT_SELECT_FAIL));
     } else {
         console.log(comments)
-        const commentFilter = (rawData) => {
-            FilteredComments = {
-                "commentIdx": rawData.commentIdx,
-                "content": rawData.content,
-                "createdTime": rawData.createdTime,
-                "userName": rawData.userName,
-                "image": rawData.image
-            }
-            return FilteredComments;
-        }
         let commentsArr = []
         comments.forEach((rawComment) => {
-        commentsArr.push(commentFilter(rawComment));
+        commentsArr.push(dataFilter.commentFilter(rawComment));
         });
         res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.COMMENT_SELECT_SUCCESS, commentsArr));
     }

@@ -2,7 +2,8 @@ var express = require('express');
 var router = express.Router();
 const defaultRes = require('../../module/utils/utils');
 const statusCode = require('../../module/utils/statusCode');
-const resMessage = require('../../module/utils/responseMessage')
+const resMessage = require('../../module/utils/responseMessage');
+const dataFilter = require('../../module/utils/dataFilter');
 const db = require('../../module/pool');
 const upload = require('../../config/multer');
 const moment = require('moment');
@@ -13,22 +14,9 @@ router.get('/:webtoonIdx', async(req, res) => {
     if (episodes.length == 0) {
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.EPISODE_SELECT_FAIL));
     } else {
-        console.log(episodes)
-        const episodeFilter = (rawData) => {
-            FilteredEpisodes = {
-                "webtoonIdx": rawData.webtoonIdx,
-                "episodeIdx": rawData.episodeIdx,
-                "webtoonName": rawData.webtoonName,
-                "title": rawData.title,
-                "views": rawData.views,
-                "createdTime": rawData.createdTime,
-                "thumbnail": rawData.thumbnail
-            }
-            return FilteredEpisodes;
-        }
         let episodesArr = []
         episodes.forEach((rawEpisode) => {
-        episodesArr.push(episodeFilter(rawEpisode));
+        episodesArr.push(dataFilter.episodeFilter(rawEpisode));
     });
         res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.EPISODE_SELECT_SUCCESS, (episodesArr)));
     }
@@ -42,21 +30,14 @@ router.get('/detail/:webtoonIdx/:episodeIdx', async(req, res) => {
 
     const insertTransaction = await db.Transaction(async(connection) => {
         episodes = await connection.query(getEpisodeWithSameWebtoonIdxQuery, [req.params.webtoonIdx, req.params.episodeIdx]);
-        const updateViewsResult = await connection.query(updateViewsQuery, [req.params.webtoonIdx, req.params.episodeIdx]);
+        await connection.query(updateViewsQuery, [req.params.webtoonIdx, req.params.episodeIdx]);
     })
     if (!insertTransaction) {
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.EPISODE_TRANSAC_FAIL));
     } else {
-        const episodeFilter = (rawData) => {
-            FilteredEpisodes = {
-                "webtoonName": rawData.webtoonName,
-                "detail": rawData.detail,   
-            }
-            return FilteredEpisodes;
-        }
         let episodesArr = []
         episodes.forEach((rawEpisode) => {
-        episodesArr.push(episodeFilter(rawEpisode));
+        episodesArr.push(dataFilter.detailFilter(rawEpisode));
         });
         res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.EPISODE_TRANSAC_SUCCESS, (episodesArr)));
     }
