@@ -35,29 +35,32 @@ router.get('/:webtoonIdx', async(req, res) => {
 })
 
 router.get('/detail/:webtoonIdx/:episodeIdx', async(req, res) => {
-    console.log(req.params.webtoonIdx);
-    console.log(req.params.episodeIdx);
-    const getEpisodeWithSameWebtoonIdxQuery = 'SELECT * FROM episode LEFT JOIN webtoon ON episode.webtoonIdx = webtoon.webtoonIdx WHERE episode.webtoonIdx = ? AND episode.episodeIdx = ?';
-    const episodes = await db.queryParam_Parse(getEpisodeWithSameWebtoonIdxQuery, [req.params.webtoonIdx, req.params.episodeIdx] );
-    if (episodes.length == 0) {
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.EPISODE_SELECT_FAIL));
+    const getEpisodeWithSameWebtoonIdxQuery = 'SELECT * FROM episode LEFT JOIN webtoon ON episode.webtoonIdx = webtoon.webtoonIdx'
+    +' WHERE episode.webtoonIdx = ? AND episode.episodeIdx = ?';
+    const updateViewsQuery = 'UPDATE episode SET views = views+1 WHERE episode.webtoonIdx = ? AND episode.episodeIdx = ?';
+    var episodes;
+
+    const insertTransaction = await db.Transaction(async(connection) => {
+        episodes = await connection.query(getEpisodeWithSameWebtoonIdxQuery, [req.params.webtoonIdx, req.params.episodeIdx]);
+        const updateViewsResult = await connection.query(updateViewsQuery, [req.params.webtoonIdx, req.params.episodeIdx]);
+    })
+    if (!insertTransaction) {
+        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.EPISODE_TRANSAC_FAIL));
     } else {
-        console.log(episodes)
         const episodeFilter = (rawData) => {
             FilteredEpisodes = {
                 "webtoonName": rawData.webtoonName,
-                "detail": rawData.detail,
+                "detail": rawData.detail,   
             }
             return FilteredEpisodes;
         }
         let episodesArr = []
         episodes.forEach((rawEpisode) => {
         episodesArr.push(episodeFilter(rawEpisode));
-    });
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.EPISODE_SELECT_SUCCESS, (episodesArr)));
+        });
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.EPISODE_TRANSAC_SUCCESS, (episodesArr)));
     }
 })
-
 
 router.post('/', upload.array('contentImgs'), async(req, res) => {
     const title = req.body.title;

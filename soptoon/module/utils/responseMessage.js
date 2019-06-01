@@ -10,6 +10,8 @@ module.exports = {
     EPISODE_INSERT_SUCCESS: "에피소드 삽입 성공",
     EPISODE_SELECT_FAIL: "에피소드 조회 실패",
     EPISODE_SELECT_SUCCESS: "에피소드 조회 성공",
+    EPISODE_TRANS_SUCCESS: "에피소드 트랜젝션 성공",
+    EPISODE_TRANS_FAIL: "에피소드 트랜젝션 실패",
     COMMENT_INSERT_FAIL: "댓글 삽입 실패",
     COMMENT_INSERT_SUCCESS: "댓글 삽입 성공",
     COMMENT_SELECT_FAIL: "댓글 조회 실패",
