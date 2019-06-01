@@ -24,6 +24,16 @@ router.get('/:webtoonIdx/:episodeIdx', async(req, res) => {
     }
 })
 
+router.get('/count/:webtoonIdx/:episodeIdx', async(req, res) => {
+    const getCommentsCountQuery = 'SELECT COUNT(*) AS commentsCount FROM comment WHERE comment.webtoonIdx = ? AND comment.episodeIdx =?;';
+    const commentsCount = await db.queryParam_Parse(getCommentsCountQuery, [req.params.webtoonIdx, req.params.episodeIdx] );
+    if (commentsCount.length == 0) {
+        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.COMMENTSCOUNT_SELECT_FAIL));
+    } else {
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.COMMENTSCOUNT_SELECT_SUCCESS, commentsCount));
+    }
+})
+
 router.post('/:webtoonIdx/:episodeIdx', upload.single('commentImg'), async(req, res) => {
     const content = req.body.content;
     const webtoonIdx = req.params.webtoonIdx;
@@ -37,12 +47,16 @@ router.post('/:webtoonIdx/:episodeIdx', upload.single('commentImg'), async(req, 
     else{
         const image = commentImg.location;
         const insertCommentQuery = 'INSERT INTO comment (createdTime, content, image, episodeIdx, userIdx, webtoonIdx)' +
-        'VALUES (?, ?, ?, ?, ?, ?)';
-        const insertCommentResult = await db.queryParam_Parse(insertCommentQuery, [createdTime, content, image, episodeIdx, 1, webtoonIdx]);
-        if (!insertCommentResult) {
-            res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.COMMENT_INSERT_FAIL));
-        } else { 
-            res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.COMMENT_INSERT_SUCCESS));
+        ' VALUES (?, ?, ?, ?, ?, ?)';
+        const updateCommentsCountQuery = 'UPDATE episode SET commentsCount = commentsCount+1 WHERE episode.webtoonIdx = ? AND episode.episodeIdx = ?';
+        const insertTransaction = await db.Transaction(async(connection) => {
+            await connection.query(insertCommentQuery, [createdTime, content, image, episodeIdx, 1, webtoonIdx]);
+            await connection.query(updateCommentsCountQuery, [req.params.webtoonIdx, req.params.episodeIdx]);
+        })
+        if (!insertTransaction) {
+            res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.COMMENT_TRANSAC_FAIL));
+        } else {
+            res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.COMMENT_TRANSAC_SUCCESS));
         }
     }
 });
