@@ -28,11 +28,11 @@ router.get('/detail/:webtoonIdx/:episodeIdx', async(req, res) => {
     const updateViewsQuery = 'UPDATE episode SET views = views+1 WHERE episode.webtoonIdx = ? AND episode.episodeIdx = ?';
     var episodes;
 
-    const insertTransaction = await db.Transaction(async(connection) => {
+    const selectTransaction = await db.Transaction(async(connection) => {
         episodes = await connection.query(getEpisodeWithSameWebtoonIdxQuery, [req.params.webtoonIdx, req.params.episodeIdx]);
         await connection.query(updateViewsQuery, [req.params.webtoonIdx, req.params.episodeIdx]);
     })
-    if (!insertTransaction) {
+    if (!selectTransaction) {
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.EPISODE_TRANSAC_FAIL));
     } else {
         let episodesArr = []
