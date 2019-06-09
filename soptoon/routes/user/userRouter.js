@@ -5,6 +5,7 @@ const statusCode = require('../../module/utils/statusCode');
 const resMessage = require('../../module/utils/responseMessage')
 const db = require('../../module/pool');
 const crypto = require('crypto-promise');
+const jwt = require('../../module/jwt');
 
 router.post('/signup', async(req, res) => {
     var signal = 0;
@@ -60,7 +61,8 @@ router.post('/login', async(req, res) => {
                     id: resultUser[0].userId,
                     name: resultUser[0].userName
                 }
-                res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.LOGIN_SUCCESS, User));
+                const token = jwt.sign(User)
+                res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.LOGIN_SUCCESS, token));
             }
             else{
                 res.status(200).send(defaultRes.successFalse(statusCode.BAD_REQUEST, resMessage.PASSWORD_MISS_MATCH));

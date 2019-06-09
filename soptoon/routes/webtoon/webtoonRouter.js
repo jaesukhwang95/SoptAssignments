@@ -19,6 +19,7 @@ router.get('/:category', async(req, res) => {
     }
     const getWebtoonWithSameCategoryQuery  = 'SELECT * FROM webtoon LEFT JOIN user ON user.userIdx = webtoon.userIdx WHERE webtoon.category = ?';
     const categorizedWebtoons = await db.queryParam_Parse(getWebtoonWithSameCategoryQuery, [req.params.category] );
+    console.log(categorizedWebtoons)
     let webtoonsArr = []
     categorizedWebtoons.forEach((rawContents) => {
         webtoonsArr.push(webtoonsFilter(rawContents));
@@ -36,14 +37,15 @@ router.get('/:category', async(req, res) => {
 router.post('/', upload.single('thumbnail'), async(req, res) => {
     const title = req.body.title;
     const category = req.body.category;
+    const userIdx = req.body.userIdx;   
     if(!title || !req.file || !category)
     {
         res.status(200).send(defaultRes.successFalse(statusCode.BAD_REQUEST, resMessage.NULL_VALUE));
     }
     else{
         const thumbnail = req.file.location;
-        const insertWebtoonQuery = 'INSERT INTO webtoon (webtoonName, likeCount, thumbnail, writer, category) VALUES (?, ?, ?, ?, ?)';
-        const insertWebtoonResult = await db.queryParam_Parse(insertWebtoonQuery, [title, 0, thumbnail, 1, category]);
+        const insertWebtoonQuery = 'INSERT INTO webtoon (webtoonName, likeCount, thumbnail, userIdx, category) VALUES (?, ?, ?, ?, ?)';
+        const insertWebtoonResult = await db.queryParam_Parse(insertWebtoonQuery, [title, 0, thumbnail, userIdx, category]);
         if (!insertWebtoonResult) {
             res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.WEBTOON_INSERT_FAIL));
         } else { 

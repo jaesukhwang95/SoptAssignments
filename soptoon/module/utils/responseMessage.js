@@ -30,5 +30,8 @@ module.exports = {
     USER_SELECT_FAIL: "유저 조회 실패",
     USER_ALREADY_EXISTS: "이미 존재하는 유저입나다",
     ID_MISS_MATCH: "아이디가 존재하지 않습니다.",
-    PASSWORD_MISS_MATCH: "패스워드가 일치하지 않습니다."
+    PASSWORD_MISS_MATCH: "패스워드가 일치하지 않습니다.",
+    EMPTY_TOKEN: "토큰이 비어있습니다.",    
+    EXPIRED_TOKEN: "토큰 기간이 만료되었습니다",
+    INVALID_TOKEN: "토큰이 올바르지 않습니다."
 };
